@@ -15,32 +15,32 @@ process.gd.sim <- function(treepair){
 	       tr2pm3 <- list()
 	       for(i in 1:100){
 			tr1pm1[[i]] <- treepair[[1]]
-			tr1pm1[[i]]$edge.length <- rlnorm(length(tr1pm1$edge.length), meanlog = log(0.01), sdlog = 0.01)
+			tr1pm1[[i]]$edge.length <- rlnorm(length(tr1pm1[[i]]$edge.length), meanlog = log(0.01), sdlog = 0.01)
 			tr2pm1[[i]] <- treepair[[2]]
-			tr2pm1[[i]]$edge.length <- rlnorm(length(tr2pm1$edge.length), meanlog = log(0.01), sdlog = 0.01)
+			tr2pm1[[i]]$edge.length <- rlnorm(length(tr2pm1[[i]]$edge.length), meanlog = log(0.01), sdlog = 0.01)
 			tr1pm2[[i]] <- treepair[[1]]
-			tr1pm2[[i]]$edge.length <- rlnorm(length(tr1pm2$edge.length), meanlog = log(0.015), sdlog = 0.01)
+			tr1pm2[[i]]$edge.length <- rlnorm(length(tr1pm2[[i]]$edge.length), meanlog = log(0.015), sdlog = 0.01)
 			tr2pm2[[i]] <- treepair[[2]]
-			tr2pm2[[i]]$edge.length <- rlnorm(length(tr2pm2$edge.length), meanlog = log(0.015), sdlog = 0.01)
+			tr2pm2[[i]]$edge.length <- rlnorm(length(tr2pm2[[i]]$edge.length), meanlog = log(0.015), sdlog = 0.01)
 			tr1pm3[[i]] <- treepair[[1]]
-			tr1pm3[[i]]$edge.length <- rlnorm(length(tr1pm3$edge.length), meanlog = log(0.02), sdlog = 0.01)
+			tr1pm3[[i]]$edge.length <- rlnorm(length(tr1pm3[[i]]$edge.length), meanlog = log(0.02), sdlog = 0.01)
 			tr2pm3[[i]] <- treepair[[2]]
-			tr2pm3[[i]]$edge.length <- rlnorm(length(tr2pm3$edge.length), meanlog = log(0.02), sdlog = 0.01)
+			tr2pm3[[i]]$edge.length <- rlnorm(length(tr2pm3[[i]]$edge.length), meanlog = log(0.02), sdlog = 0.01)
 	       }
 	       
 	       # Simulate alignment data from phylograms, and estimate trees.
-	       
-	       al1pm1 <- lapply(tr1pm1, simSeq)
+
+	       al1pm1 <- lapply(tr1pm1, simSeq, l = 100)
 	       tr1pm1est <- lapply(al1pm1, function(x) optim.pml(pml(NJ(dist.dna(as.DNAbin(x))), x), optNni = T)$tree)
-	       al2pm1 <- lapply(tr2pm1, simSeq)
+	       al2pm1 <- lapply(tr2pm1, simSeq, l = 100)
 	       tr2pm1est <- lapply(al2pm1, function(x) optim.pml(pml(NJ(dist.dna(as.DNAbin(x))), x), optNni = T)$tree)
-	       al1pm2 <- lapply(tr1pm2, simSeq)
+	       al1pm2 <- lapply(tr1pm2, simSeq, l = 100)
 	       tr1pm2est <- lapply(al1pm2, function(x) optim.pml(pml(NJ(dist.dna(as.DNAbin(x))), x), optNni = T)$tree)
-   	       al2pm2 <- lapply(tr2pm2, simSeq)
+   	       al2pm2 <- lapply(tr2pm2, simSeq, l = 100)
 	       tr2pm2est <- lapply(al2pm2, function(x) optim.pml(pml(NJ(dist.dna(as.DNAbin(x))), x), optNni = T)$tree)
-	       al1pm3 <- lapply(tr1pm3, simSeq)
+	       al1pm3 <- lapply(tr1pm3, simSeq, l = 100)
 	       tr1pm3est <- lapply(al1pm3, function(x) optim.pml(pml(NJ(dist.dna(as.DNAbin(x))), x), optNni = T)$tree)
-	       al2pm3 <- lapply(tr2pm3, simSeq)
+	       al2pm3 <- lapply(tr2pm3, simSeq, l = 100)
 	       tr2pm3est <- lapply(al2pm3, function(x) optim.pml(pml(NJ(dist.dna(as.DNAbin(x))), x), optNni = T)$tree)
 	       
 	       sim.phylogs <- c(tr1pm1, tr2pm1, tr1pm2, tr2pm2, tr1pm3, tr2pm3)

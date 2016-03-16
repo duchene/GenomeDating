@@ -2,7 +2,7 @@
 
 require(cluster)
 
-topoclustMDS <- function(data, mdsdim = 1, max.k = 5, makeplot = T){
+topoclustMDS <- function(data, mdsdim = 2, max.k = 5, makeplot = T){
 
 	if(class(data[[1]]) == "phyDat"){
 		als <- data
