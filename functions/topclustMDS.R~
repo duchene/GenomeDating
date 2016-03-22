@@ -2,8 +2,10 @@
 
 require(cluster)
 
-topoclustMDS <- function(data, mdsdim = 2, max.k = 5, makeplot = T){
-
+topoclustMDS <- function(data, mdsdim = 1, makeplot = T){
+	
+	max.k = length(data) - 1
+	
 	if(class(data[[1]]) == "phyDat"){
 		als <- data
 		data <- lapply(als, function(x) optim.pml(pml(NJ(dist.dna(as.DNAbin(x))), x), optNni = T)$tree)
@@ -24,11 +26,12 @@ topoclustMDS <- function(data, mdsdim = 2, max.k = 5, makeplot = T){
 	if(makeplot) plot(mdsres$points)
 	gapstats <- clusGap(mdsres$points, pam, max.k)
         bestNclust <- which(gapstats$Tab[, "gap"] == max(gapstats$Tab[, "gap"]))
-	print(paste("The best number of clusters is", bestNclust))
+	print("Gap statistics table:")
+	print(gapstats$Tab)
+	if(length(bestNclust) > 1) bestNclust <- bestNclust[1]
+	clusterdata <- pam(mdsres$points, k = bestNclust)
 	
-	clusterdata <- pam(mdsres$points, k = bestNclust)$clustering
-	
-	res <- list(topodists = topdistmat, mds = mdsres, clustering = clusterdata)
+	res <- list(topodists = topdistmat, mds = mdsres, clustering.data = clusterdata)
 	
 	return(res)
 	
