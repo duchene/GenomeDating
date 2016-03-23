@@ -31,7 +31,7 @@ topoclustMDS <- function(data, mdsdim = 1, makeplot = T){
 	if(length(bestNclust) > 1) bestNclust <- bestNclust[1]
 	clusterdata <- pam(mdsres$points, k = bestNclust)
 	
-	res <- list(topodists = topdistmat, mds = mdsres, clustering.data = clusterdata)
+	res <- list(topodists = topdistmat, mds = mdsres, clustering.data = clusterdata, k = bestNclust)
 	
 	return(res)
 	
