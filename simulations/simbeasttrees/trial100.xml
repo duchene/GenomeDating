@@ -126,8 +126,8 @@ name="alignment">
 <map name="Normal">beast.math.distributions.Normal</map>
 
 
-<run chainLength="1000" id="mcmc" sampleFromPrior="true" spec="MCMC">
-    <state id="state" storeEvery="5000">
+<run chainLength="100000" id="mcmc" sampleFromPrior="true" spec="MCMC">
+    <state id="state" storeEvery="1">
         <tree id="Tree.t:tempdata" name="stateNode">
             <taxonset id="TaxonSet.tempdata" spec="TaxonSet">
                 <data
@@ -364,14 +364,14 @@ name="alignment"/>
         <log idref="root.prior"/>
     </logger>
 
-    <logger id="screenlog" logEvery="100">
+    <logger id="screenlog" logEvery="1">
         <log idref="posterior"/>
         <log arg="@posterior" id="ESS.0" spec="util.ESS"/>
         <log idref="likelihood"/>
         <log idref="prior"/>
     </logger>
 
-    <logger fileName="$(tree).trees" id="treelog.t:tempdata" logEvery="1000" mode="tree">
+    <logger fileName="$(tree).trees" id="treelog.t:tempdata" logEvery="100" mode="tree">
         <log id="TreeWithMetaDataLogger.t:tempdata" spec="beast.evolution.tree.TreeWithMetaDataLogger" tree="@Tree.t:tempdata"/>
     </logger>
 
