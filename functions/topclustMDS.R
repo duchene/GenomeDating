@@ -25,13 +25,15 @@ topoclustMDS <- function(data, mdsdim = 1, makeplot = T){
 	print("MDS completed")
 	if(makeplot) plot(mdsres$points)
 	gapstats <- clusGap(mdsres$points, pam, max.k)
-        bestNclust <- which(gapstats$Tab[, "gap"] == max(gapstats$Tab[, "gap"]))
-	print("Gap statistics table:")
-	print(gapstats$Tab)
-	if(length(bestNclust) > 1) bestNclust <- bestNclust[1]
-	clusterdata <- pam(mdsres$points, k = bestNclust)
+	gapstable <- gapstats$Tab
+	gapstable[is.finite(gapstable)] <- NA
+        #bestNclust <- which(gapstable[, "gap"] == max(gapstable[, "gap"], na.rm = T))
+	#print("Gap statistics table:")
+	#print(gapstats$Tab)
+	#if(length(bestNclust) > 1) bestNclust <- bestNclust[1]
+	#clusterdata <- pam(mdsres$points, k = bestNclust)
 	
-	res <- list(topodists = topdistmat, mds = mdsres, clustering.data = clusterdata, k = bestNclust)
+	res <- list(topodists = topdistmat, mds = mdsres, gapstats = gapstats)#, clustering.data = clusterdata, k = bestNclust)
 	
 	return(res)
 	
