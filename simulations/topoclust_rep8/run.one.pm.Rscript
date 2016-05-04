@@ -1,4 +1,6 @@
 require(phangorn)
+source("../../functions/process.sim.chronog.R")
+source("../../functions/topclustMDS.R")
 for(i in 1:length(dir("schemetrees"))){
       trs <- read.tree(paste0("schemetrees/", dir("schemetrees")[i]))
       if(class(trs) == "phylo") trs <- list(trs)

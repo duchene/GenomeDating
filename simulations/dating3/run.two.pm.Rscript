@@ -1,0 +1,157 @@
+require(phangorn)
+require(cluster)
+source("../../functions/process.sim.chronog.R")
+source("../../functions/bsd.matrix.para.R")
+source("../../functions/partitions.bsd.R")
+
+# Simulate and write data sets
+
+trs <- read.tree(grep("[.]tre", dir(), value = T))
+outgroup1 <- trs[[1]]$tip.label[Descendants(trs[[1]], Children(trs[[1]], 101)[1], type = "tips")[[1]]]
+#outgroup2 <- Descendants(trs[[1]], Children(trs[[1]], 101)[2], type = "tips")
+allsimdata <- process.gd.sim(trs, nclocks = 2, meanclocks = c(0.005, 0.005), sdclocks = c(0.01, 0.01), seqlength = 1000, reps = 20)
+simdata <- lapply(unlist(allsimdata[[2]], recursive = F), as.DNAbin)
+
+# Topology clustering (single topology), no pacemaker clustering
+system("mkdir topclus_nopm_mcmctree")
+setwd("topclus_nopm_mcmctree")
+topclus_nopm <- do.call(cbind, simdata[c(1:20, 101:120)])
+write.dna(topclus_nopm, file = "topclus_nopm.phy", format = "sequential", colsep = "", nbcol = -1, indent = 0, blocksep = 0)
+topclus_nopm_lines <- readLines("topclus_nopm.phy")
+topclus_nopm_lines <- gsub(" +", "  ", topclus_nopm_lines)
+writeLines(topclus_nopm_lines, con = "topclus_nopm.phy")
+topclus_nopm_tr <- optim.pml(pml(NJ(dist.dna(topclus_nopm)), as.phyDat(topclus_nopm)), optNni = T)$tree
+topclus_nopm_tr$edge.length <- NULL
+topclus_nopm_tr <- root(topclus_nopm_tr, outgroup = outgroup1, resolve.root = T)
+write.tree(topclus_nopm_tr, file = "topclus_nopm.tre")
+system("cp ../dating_in.ctl .")
+dating <- readLines("dating_in.ctl")
+dating[2:4] <- c("seqfile = topclus_nopm.phy", "treefile = topclus_nopm.tre", "outfile = topclus_nopm_outfile")
+writeLines(dating, con = "dating_in.ctl")
+setwd("..")
+
+# Topology clustering (single topology), random partitions into two loci.
+system("mkdir topclus_rpm_mcmctree")
+setwd("topclus_rpm_mcmctree")
+rand <- sample(1:40, 40) 
+topclus_rpm <- list(pm1 = do.call(cbind, simdata[c(1:20, 101:120)][rand[1:20]]), pm2 = do.call(cbind, simdata[c(1:20, 101:120)][rand[21:40]]))
+write.dna(topclus_rpm[[1]], file = "topclus_rpm.phy", format = "sequential", colsep = "", nbcol = -1, indent = 0, blocksep = 0)
+write.dna(topclus_rpm[[2]], file = "topclus_rpm.phy", format = "sequential", colsep = "", nbcol = -1, indent = 0, blocksep = 0, append = T)
+topclus_rpm_lines <- readLines("topclus_rpm.phy")
+topclus_rpm_lines <- gsub(" +", "  ", topclus_rpm_lines)
+writeLines(topclus_rpm_lines, con = "topclus_rpm.phy")
+topclus_rpm_tr <- optim.pml(pml(NJ(dist.dna(cbind(topclus_rpm[[1]], topclus_rpm[[2]]))), as.phyDat(cbind(topclus_rpm[[1]], topclus_rpm[[2]]))), optNni = T)$tree
+topclus_rpm_tr$edge.length <- NULL
+topclus_rpm_tr <- root(topclus_rpm_tr, outgroup = outgroup1, resolve.root = T)
+write.tree(topclus_rpm_tr, file = "topclus_rpm.tre")
+system("cp ../dating_in.ctl .")
+dating <- readLines("dating_in.ctl")
+dating[2:4] <- c("seqfile = topclus_rpm.phy", "treefile = topclus_rpm.tre", "outfile = topclus_rpm_outfile")
+writeLines(dating, con = "dating_in.ctl")
+setwd("..")
+
+# Clustering both topology (single topology), and pacemakers
+system("mkdir topclus_pm_mcmctree")
+setwd("topclus_pm_mcmctree")
+topclus_pm <- list(pm1 = do.call(cbind, simdata[c(1:20)]), pm2 = do.call(cbind, simdata[c(101:120)]))
+write.dna(topclus_pm[[1]], file = "topclus_pm.phy", format = "sequential", colsep = "", nbcol = -1, indent = 0, blocksep = 0)
+write.dna(topclus_pm[[2]], file = "topclus_pm.phy", format = "sequential", colsep = "", nbcol = -1, indent = 0, blocksep = 0, append = T)
+topclus_pm_lines <- readLines("topclus_pm.phy")
+topclus_pm_lines <- gsub(" +", "  ", topclus_pm_lines)
+writeLines(topclus_pm_lines, con = "topclus_pm.phy")
+topclus_pm_tr <- optim.pml(pml(NJ(dist.dna(cbind(topclus_pm[[1]], topclus_pm[[2]]))), as.phyDat(cbind(topclus_pm[[1]], topclus_pm[[2]]))), optNni = T)$tree
+topclus_pm_tr$edge.length <- NULL
+topclus_pm_tr <- root(topclus_pm_tr, outgroup = outgroup1, resolve.root = T)
+write.tree(topclus_pm_tr, file = "topclus_pm.tre")
+system("cp ../dating_in.ctl .")
+dating <- readLines("dating_in.ctl")
+dating <- c(dating[1], "seqfile = topclus_pm.phy", "treefile = topclus_pm.tre", "outfile = topclus_pm_outfile", "usedata = 3", "ndata = 2", dating[7:length(dating)])
+writeLines(dating, con = "dating_in.ctl")
+setwd("..")
+
+# Non-clustering (random sample of loci)
+system("mkdir notclus_nopm_mcmctree")
+setwd("notclus_nopm_mcmctree")
+rand <- c(1:10, 101:110, sample(c(11:100, 111:200), 20))
+notclus_nopm <- do.call(cbind, simdata[rand])
+write.dna(notclus_nopm, file = "notclus_nopm.phy", format = "sequential", colsep = "", nbcol = -1, indent = 0, blocksep = 0)
+notclus_nopm_lines <- readLines("notclus_nopm.phy")
+notclus_nopm_lines <- gsub(" +", "  ", notclus_nopm_lines)
+writeLines(notclus_nopm_lines, con = "notclus_nopm.phy")
+notclus_nopm_tr	<- optim.pml(pml(NJ(dist.dna(notclus_nopm)), as.phyDat(notclus_nopm)), optNni = T)$tree
+notclus_nopm_tr$edge.length <- NULL
+notclus_nopm_tr <- try(root(notclus_nopm_tr, outgroup = outgroup1, resolve.root = T))
+write.tree(notclus_nopm_tr, file = "notclus_nopm.tre")
+system("cp ../dating_in.ctl .")
+dating <- readLines("dating_in.ctl")
+dating[2:4] <- c("seqfile = notclus_nopm.phy", "treefile = notclus_nopm.tre", "outfile = notclus_nopm_outfile")
+writeLines(dating, con = "dating_in.ctl")
+setwd("..")
+
+# No topology clustering, only pacemaker clustering
+system("mkdir notclus_pm_mcmctree")
+setwd("notclus_pm_mcmctree")
+rand <- sample(1:200, 40)
+bsdmat <- bsd.matrix.para(unlist(allsimdata[[3]], recursive = F)[rand])
+bsdpart <- partitions.bsd(bsdmat)
+clustering <- as.numeric(bsdpart[[1]][, bsdpart[[3]]])
+notclus_pm <- list()
+for(i in 1:max(clustering)){
+      notclus_pm[[i]] <- do.call(cbind, simdata[which(clustering == i)])
+      write.dna(notclus_pm[[i]], file = "notclus_pm.phy", format = "sequential", colsep = "", nbcol = -1, indent = 0, blocksep = 0, append = T)
+}
+notclus_pm_lines <- readLines("notclus_pm.phy")
+notclus_pm_lines <- gsub(" +", "  ", notclus_pm_lines)
+writeLines(notclus_pm_lines, con = "notclus_pm.phy")
+if(length(notclus_pm) == 1){
+	print("One pacemaker found")
+	notclus_pm_tr <- optim.pml(pml(NJ(dist.dna(notclus_pm)), as.phyDat(notclus_pm)), optNni = T)$tree
+} else {
+        print(paste(length(notclus_pm), "pacemakers found"))
+        notclus_pm_tr <- optim.pml(pml(NJ(dist.dna(do.call(cbind, notclus_pm))), as.phyDat(do.call(cbind, notclus_pm))), optNni = T)$tree
+}
+notclus_pm_tr$edge.length <- NULL
+notclus_pm_tr <- root(notclus_pm_tr, outgroup = outgroup1, resolve.root = T)
+write.tree(notclus_pm_tr, file = "notclus_pm.tre")
+system("cp ../dating_in.ctl .")
+dating <- readLines("dating_in.ctl")
+dating <- c(dating[1], "seqfile = notclus_pm.phy", "treefile = notclus_pm.tre", "outfile = notclus_pm_outfile", "usedata = 3", paste("ndata =", i), dating[7:length(dating)])
+writeLines(dating, con = "dating_in.ctl")
+setwd("..")
+
+
+# No topology clustering, random paritioning of data into loci
+system("mkdir notclus_rpm_mcmctree")
+setwd("notclus_rpm_mcmctree")
+rand <- c(1:10, 101:110, sample(c(11:100, 111:200), 20))
+notclus_rpm <- list()
+if(!exists("clustering")) clustering <- 5
+clustfact <- 40/max(clustering)
+for(i in 1:max(clustering)){
+      notclus_rpm[[i]] <- do.call(cbind, simdata[rand[(1:clustfact)+(clustfact*(i-1))]])
+      write.dna(notclus_rpm[[i]], file = "notclus_rpm.phy", format = "sequential", colsep = "", nbcol = -1, indent = 0, blocksep = 0, append = T)
+}
+notclus_rpm_lines <- readLines("notclus_rpm.phy")
+notclus_rpm_lines <- gsub(" +", "  ", notclus_rpm_lines)
+writeLines(notclus_rpm_lines, con = "notclus_rpm.phy")
+if(length(notclus_rpm) == 1){
+        print("One random locus created")
+        notclus_rpm_tr <- optim.pml(pml(NJ(dist.dna(notclus_rpm)), as.phyDat(notclus_rpm)), optNni = T)$tree
+} else {
+        print(paste(length(notclus_rpm), "random loci created"))
+        notclus_rpm_tr <- optim.pml(pml(NJ(dist.dna(do.call(cbind, notclus_rpm))), as.phyDat(do.call(cbind, notclus_rpm))), optNni = T)$tree
+}
+notclus_rpm_tr$edge.length <- NULL
+notclus_rpm_tr <- root(notclus_rpm_tr, outgroup = outgroup1, resolve.root = T)
+write.tree(notclus_rpm_tr, file = "notclus_rpm.tre")
+system("cp ../dating_in.ctl .")
+dating <- readLines("dating_in.ctl")
+dating <- c(dating[1], "seqfile = notclus_rpm.phy", "treefile = notclus_rpm.tre", "outfile = notclus_rpm_outfile", "usedata = 3", paste("ndata =", i), dating[7:length(dating)])
+writeLines(dating, con = "dating_in.ctl")
+setwd("..")
+
+
+# Run MCMCtree for each sim
+
+
+
