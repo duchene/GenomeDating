@@ -2,11 +2,11 @@
 seqfile = topclus_pm.phy
 treefile = topclus_pm.tre
 outfile = topclus_pm_outfile
-usedata = 3
+usedata = 2
 ndata = 2
          clock = 2   * 1: global clock; 2: independent rates; 3: correlated rates
        RootAge = '>1.0<1000'
-         model = 4    * 0:JC69, 1:K80, 2:F81, 3:F84, 4:HKY85
+         model = 7    * 0:JC69, 1:K80, 2:F81, 3:F84, 4:HKY85
          alpha = 0.5    * alpha for gamma rates at sites
          ncatG = 4    * No. categories in discrete gamma
      cleandata = 0    * remove sites with ambiguity data (1:yes, 0:no)?

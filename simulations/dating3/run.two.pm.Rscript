@@ -46,7 +46,7 @@ topclus_rpm_tr <- root(topclus_rpm_tr, outgroup = outgroup1, resolve.root = T)
 write.tree(topclus_rpm_tr, file = "topclus_rpm.tre")
 system("cp ../dating_in.ctl .")
 dating <- readLines("dating_in.ctl")
-dating[2:4] <- c("seqfile = topclus_rpm.phy", "treefile = topclus_rpm.tre", "outfile = topclus_rpm_outfile")
+dating[c(2:4, 6)] <- c("seqfile = topclus_rpm.phy", "treefile = topclus_rpm.tre", "outfile = topclus_rpm_outfile", "ndata = 2")
 writeLines(dating, con = "dating_in.ctl")
 setwd("..")
 
