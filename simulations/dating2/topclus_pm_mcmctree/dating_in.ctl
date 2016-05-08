@@ -2,8 +2,8 @@
 seqfile = topclus_pm.phy
 treefile = topclus_pm.tre
 outfile = topclus_pm_outfile
-usedata = 2
-ndata = 2
+usedata = 3*
+ndata = 2*
          clock = 2   * 1: global clock; 2: independent rates; 3: correlated rates
        RootAge = '>1.0<1000'
          model = 7    * 0:JC69, 1:K80, 2:F81, 3:F84, 4:HKY85

@@ -2,7 +2,7 @@
 seqfile = topclus_nopm.phy
 treefile = topclus_nopm.tre
 outfile = topclus_nopm_outfile
-usedata = 3
+usedata = 3*
          ndata = 1   * 
          clock = 2   * 1: global clock; 2: independent rates; 3: correlated rates
        RootAge = '>1.0<1000'
