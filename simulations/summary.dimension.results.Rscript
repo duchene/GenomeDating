@@ -1,0 +1,14 @@
+files <- grep("topoclust", dir(), value = T)
+allresmats <- list()
+for(k in 1:length(files)){
+      setwd(files[k])     
+      source("../get.dimensions.results.Rscript")
+      if(exists("summary.resmat")){ 
+      	     summary.resmat[, 6] <- rowMeans(cbind(resmat[, 6], summary.resmat[, 6]))
+      	     summary.resmat[, 7] <- rowMeans(cbind(resmat[, 7], summary.resmat[, 7]))
+      } else { 
+      	     summary.resmat <- resmat
+      }
+      allresmats[[k]] <- resmat
+      setwd("..")
+}

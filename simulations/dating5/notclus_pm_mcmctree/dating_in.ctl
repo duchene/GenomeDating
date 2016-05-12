@@ -2,7 +2,7 @@
 seqfile = notclus_pm.phy
 treefile = notclus_pm.tre
 outfile = notclus_pm_outfile
-usedata = 3*
+usedata = 2*
 ndata = 5 *
          clock = 2   * 1: global clock; 2: independent rates; 3: correlated rates
        RootAge = '>1.0<1000'

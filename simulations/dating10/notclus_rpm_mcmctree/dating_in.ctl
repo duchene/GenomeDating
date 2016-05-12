@@ -2,7 +2,7 @@
 seqfile = notclus_rpm.phy
 treefile = notclus_rpm.tre
 outfile = notclus_rpm_outfile
-usedata = 3*
+usedata = 2*
 ndata = 5 *
          clock = 2   * 1: global clock; 2: independent rates; 3: correlated rates
        RootAge = '>1.0<1000'

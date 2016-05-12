@@ -2,9 +2,9 @@ library(phangorn)
 library(cluster)
 source("../../functions/gapCR.R")
 
-resmat <- matrix(NA, ncol = 6, nrow = 108)
+resmat <- matrix(NA, ncol = 7, nrow = 108)
 resfiles <- grep("topos", dir(), value = T)
-colnames(resmat) <- c("cluster.distance", "N.clusters", "N.tips", "N.mdsdim", "N.pm", "optim.N.clust")
+colnames(resmat) <- c("cluster.distance", "N.clusters", "N.tips", "N.mdsdim", "N.pm", "optim.N.clust", "optim.k.gap")
 resmat <- as.data.frame(resmat)
 
 for(i in 1:length(resfiles)){
@@ -17,5 +17,6 @@ for(i in 1:length(resfiles)){
       #maxseclusts <- try(maxSE(f = topclusters$gapstats$Tab[, 3], SE.f = topclusters$gapstats$Tab[, 4], method = "Tibs2001SEmax"))
       #if(class(maxseclusts) != "try-error") resmat[i, 6] <- maxseclusts
       resmat[i, 6] <- gapCR(topclusters$gapstats$Tab[1:20, 3], topclusters$gapstats$Tab[1:20, 4])
+      resmat[i, 7] <- topclusters$gapstats$Tab[resmat[i, 6], 3]
            
 }
