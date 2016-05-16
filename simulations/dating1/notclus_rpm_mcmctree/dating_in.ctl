@@ -16,7 +16,7 @@ ndata = 5 *
    rgene_gamma = 2 2   * gamma prior for rate for genes
   sigma2_gamma = 1 10    * gamma prior for sigma^2  (for clock=2)
       finetune = 1: .1 .1 .1 .1 .1 .1  * auto (0 or 1) : times, rates, mixing, paras, RateParas, FossilErr
-         print = 0
+         print = 1
         burnin = 5000
       sampfreq = 5
        nsample = 20000
