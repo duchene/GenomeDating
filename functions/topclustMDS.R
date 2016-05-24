@@ -4,17 +4,23 @@ require(cluster)
 
 topoclustMDS <- function(data, mdsdim = 1, makeplot = T){
 	
-	max.k = length(data) - 1
-	
 	if(class(data[[1]]) == "phyDat"){
 		als <- data
-		data <- lapply(als, function(x) optim.pml(pml(NJ(dist.dna(as.DNAbin(x))), x), optNni = T)$tree)
+		data <- list()
+		for(i in 1:length(als)){ 
+		        data[[i]] <- try(NJ(dist.dna(as.DNAbin(als[[i]]), model = "TN93")))
+			print(paste("estimated tree", i))
+		}
+		names(data) <- names(als)
+		data <- data[which(sapply(data, class) != "try-error")]
 	}
+	max.k = length(data) - 1
 	topdistmat <- matrix(NA, ncol = length(data), nrow = length(data))
 	for(i in 1:length(data)){
 	      for(j in i:length(data)){
 	      	    topdistmat[j, i] <- dist.topo(data[[i]], data[[j]])
 	      }
+	      print(paste("finished column", i))
 	}
 	
 	print("Created topological distance matrix")
@@ -33,7 +39,7 @@ topoclustMDS <- function(data, mdsdim = 1, makeplot = T){
 	#if(length(bestNclust) > 1) bestNclust <- bestNclust[1]
 	#clusterdata <- pam(mdsres$points, k = bestNclust)
 	
-	res <- list(topodists = topdistmat, mds = mdsres, gapstats = gapstats)#, clustering.data = clusterdata, k = bestNclust)
+	res <- list(topodists = topdistmat, mds = mdsres, gapstats = gapstats, loci = names(data))#, clustering.data = clusterdata, k = bestNclust)
 	
 	return(res)
 	

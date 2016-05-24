@@ -1,0 +1,21 @@
+source("../functions/get.mcmctree.acc.unc.R")
+datingfols <- paste0("dating", c(1:3, 5:10))
+results <- matrix(NA, nrow = 1, ncol = 3)
+
+for(i in 1:length(datingfols)){
+      setwd(datingfols[i])
+      fols <- grep("mcmctree", dir(), value = T)
+      for(j in 1:length(fols)){
+      	    setwd(fols[j])
+      	    output <- readLines(grep("_outfile", dir(), value = T))
+	    phy <- read.tree(text = output[grep("Species tree for TreeView", output) + 5])
+	    accunc <- get.mcmctree.acc.unc(phy)
+	    accunc <- cbind(fols[j], accunc)
+	    results <- rbind(results, accunc)
+	    setwd("..")
+      }
+      setwd("..")
+}
+
+results <- as.data.frame(results[2:nrow(results),])
+results$node <- rownames(results)
