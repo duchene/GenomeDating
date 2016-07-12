@@ -1,0 +1,33 @@
+# This function processess a chronogram to generate simulated data under several topologies and pacemakers. Alternative to process.sim.chronog.R
+
+process.sim.chronog.2 <- function(chron, pms.exp.rate = c(25, 75), monoph = list(paste0("t", 1:20), paste0("t", 1:10)), topos = 5, sprsteps = 5, seed = 1234, slen = 1000, reps = 20){
+		      
+	phylogs <- list()	
+	als <- list()
+	outgroup1 <- chron$tip.label[Descendants(chron, Children(chron, (length(chron$tip.label) + 1))[1], type = "tips")[[1]]]
+	
+	for(i in 1:length(pms.exp.rate)){
+	      phylogs[[length(phylogs) + 1]] <- chron
+	      phylogs[[length(phylogs)]]$edge.length <- rexp(length(phylogs[[length(phylogs)]]$edge.length), rate = pms.exp.rate[i])
+	      names(phylogs)[length(phylogs)] <- paste0("pm", i, "top1")
+	      set.seed(seed)
+	      for(j in 2:topos){
+	      	    phylogs[[length(phylogs) + 1]] <- rNNI(phylogs[[length(phylogs)]], sprsteps, 1)
+		    while(!is.monophyletic(phylogs[[length(phylogs)]], tips = monoph[[1]]) & !is.monophyletic(phylogs[[length(phylogs)]], tips = monoph[[2]]) & !is.monophyletic(phylogs[[length(phylogs)]], tips = outgroup1)) phylogs[[length(phylogs)]] <- rSPR(phylogs[[length(phylogs) - 1]], sprsteps, 1)
+		    names(phylogs)[length(phylogs)] <- paste0("pm", i, "top", j)
+		    print(paste("simulated", names(phylogs)[length(phylogs)]))
+	      }
+	}
+	for(i in 1:reps){
+	      newals <- lapply(phylogs, simSeq, l = slen)
+	      names(newals) <- names(phylogs)
+	      als <- c(als, newals)
+	}
+	
+	est.phylogs <- lapply(als, function(x) optim.pml(pml(NJ(dist.dna(as.DNAbin(x))), x), optNni = T)$tree)
+	names(est.phylogs) <- names(als)
+
+	allres <- list(phylogs, als, est.phylogs, outgroup1)
+	
+	return(allres)
+}

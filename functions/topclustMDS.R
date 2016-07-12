@@ -8,11 +8,12 @@ topoclustMDS <- function(data, mdsdim = 1, makeplot = T){
 		als <- data
 		data <- list()
 		for(i in 1:length(als)){ 
-		        data[[i]] <- try(NJ(dist.dna(as.DNAbin(als[[i]]), model = "TN93")))
+		        data[[i]] <- try(NJ(dist.dna(as.DNAbin(als[[i]], model = "GTR"), model = "TN93")))
 			print(paste("estimated tree", i))
 		}
 		names(data) <- names(als)
 		data <- data[which(sapply(data, class) != "try-error")]
+		print(paste(length(data), "loci have been processed"))
 	}
 	max.k = length(data) - 1
 	topdistmat <- matrix(NA, ncol = length(data), nrow = length(data))
