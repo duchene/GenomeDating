@@ -10,13 +10,13 @@ ndata = 2*
          alpha = 0    * alpha for gamma rates at sites
          ncatG = 1    * No. categories in discrete gamma
      cleandata = 0    * remove sites with ambiguity data (1:yes, 0:no)?
-       BDparas = 1 1 1 0  * lambda, mu, rho, psi for birth-death-sampling model
+       BDparas = 1 1 0  * lambda, mu, rho, psi for birth-death-sampling model
    kappa_gamma = 6 2   * gamma prior for kappa
    alpha_gamma = 1 1   * gamma prior for alpha
    rgene_gamma = 2 2   * gamma prior for rate for genes
   sigma2_gamma = 1 10    * gamma prior for sigma^2  (for clock=2)
       finetune = 1: .1 .1 .1 .1 .1 .1  * auto (0 or 1) : times, rates, mixing, paras, RateParas, FossilErr
-         print = 0
+         print = 1
         burnin = 5000
       sampfreq = 5
        nsample = 20000
