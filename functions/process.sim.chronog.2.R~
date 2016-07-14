@@ -1,6 +1,6 @@
 # This function processess a chronogram to generate simulated data under several topologies and pacemakers. Alternative to process.sim.chronog.R
 
-process.sim.chronog.2 <- function(chron, pms.exp.rate = c(50, 100), monoph = list(paste0("t", 1:20), paste0("t", 1:10)), topos = 5, sprsteps = 5, seed = 1234, slen = 1000, reps = 20){
+process.sim.chronog.2 <- function(chron, pms.exp.rate = c(500, 1000), monoph = list(paste0("t", 1:20), paste0("t", 1:10)), topos = 5, sprsteps = 5, seed = 1234, slen = 1000, reps = 20){
 		      
 	phylogs <- list()	
 	als <- list()
@@ -8,11 +8,11 @@ process.sim.chronog.2 <- function(chron, pms.exp.rate = c(50, 100), monoph = lis
 	
 	for(i in 1:length(pms.exp.rate)){
 	      phylogs[[length(phylogs) + 1]] <- chron
-	      phylogs[[length(phylogs)]]$edge.length <- rexp(length(phylogs[[length(phylogs)]]$edge.length), rate = pms.exp.rate[i])
+	      phylogs[[length(phylogs)]]$edge.length <- chron$edge.length * rexp(length(phylogs[[length(phylogs)]]$edge.length), rate = pms.exp.rate[i])
 	      names(phylogs)[length(phylogs)] <- paste0("pm", i, "top1")
 	      set.seed(seed)
 	      for(j in 2:topos){
-	      	    phylogs[[length(phylogs) + 1]] <- rSPR(phylogs[[length(phylogs)]], sprsteps, 1)
+	      	    phylogs[[length(phylogs) + 1]] <- rNNI(phylogs[[length(phylogs)]], sprsteps, 1)
 		    while(!is.monophyletic(phylogs[[length(phylogs)]], tips = monoph[[1]]) & !is.monophyletic(phylogs[[length(phylogs)]], tips = monoph[[2]]) & !is.monophyletic(phylogs[[length(phylogs)]], tips = outgroup1)) phylogs[[length(phylogs)]] <- rSPR(phylogs[[length(phylogs) - 1]], sprsteps, 1)
 		    names(phylogs)[length(phylogs)] <- paste0("pm", i, "top", j)
 		    print(paste("simulated", names(phylogs)[length(phylogs)]))
